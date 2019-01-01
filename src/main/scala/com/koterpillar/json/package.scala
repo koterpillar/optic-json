@@ -1,5 +1,7 @@
 package com.koterpillar
 
-package object json {
+import io.circe.Json
 
+package object json extends AllInstances {
+  def schema[A: Schema]: Json = implicitly[Schema[A]].schema
 }
