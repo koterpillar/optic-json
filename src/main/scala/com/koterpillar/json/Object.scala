@@ -10,7 +10,7 @@ trait Field_ {
 
 case class Field[A](name: String, schema: Schema[A]) extends Field_
 
-trait Object[A] extends Schema[A] {
+sealed trait Object[A] extends Schema[A] {
   def fields: List[Field_]
 
   override def schema: Json = Json.obj(
@@ -24,6 +24,6 @@ case object NullObject extends Object[Unit] {
   override def fields: List[Field_] = Nil
 }
 
-case class ConsObject[H, T](head: Field[H], tail: Object[T]) extends Object[(H, T)] {
+final case class ConsObject[H, T](head: Field[H], tail: Object[T]) extends Object[(H, T)] {
   override def fields: List[Field_] = head :: tail.fields
 }
