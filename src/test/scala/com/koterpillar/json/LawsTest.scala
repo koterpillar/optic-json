@@ -26,6 +26,13 @@ trait SchemaLaws[T] {
     }
     result <-> Right(())
   }
+
+  def roundTrip(value: T): IsEq[Option[T]] = {
+    val encoded: Json = schema.codec.reverseGet(value)
+    val decoded: Option[T] = schema.codec.getOption(encoded)
+
+    decoded <-> Some(value)
+  }
 }
 
 object SchemaLaws {
@@ -39,10 +46,11 @@ trait SchemaTests[T] extends Laws {
   def laws: SchemaLaws[T]
 
   def algebra(implicit arb: Arbitrary[T],
-              eqFOptEmail: Eq[T]) =
+              eq: Eq[T]) =
     new SimpleRuleSet(
       name = "Schema",
-      "encoding corresponds to schema" -> forAll(laws.encodedIsValid _)
+      "encoding corresponds to schema" -> forAll(laws.encodedIsValid _),
+      "decoding round-trips encoding" -> forAll(laws.roundTrip _),
     )
 }
 
