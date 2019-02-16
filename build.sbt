@@ -20,7 +20,7 @@ lazy val lensJson = project
       "io.circe" %% "circe-generic" % circeVersion,
       "io.circe" %% "circe-parser" % circeVersion,
 
-      "com.github.everit-org.json-schema" % "org.everit.json.schema" % jsonSchemaVersion % Test,
+      "com.github.everit-org.json-schema" % "org.everit.json.schema" % jsonSchemaVersion,
 
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
 
