@@ -5,6 +5,7 @@ import cats.implicits._
 import cats.kernel.laws._
 import cats.kernel.laws.discipline._
 import io.circe.Json
+import monocle.Iso
 import org.scalacheck.Arbitrary
 import org.scalacheck.Prop._
 import org.scalatest.FunSuiteLike
@@ -78,4 +79,9 @@ class InstancesSchemaTests extends Discipline with FunSuiteLike {
   implicit val sampleGenericSchema: Schema[SampleGeneric] =
     product(field("myint"), product(field("mystring"), product(field("mybool"), emptyObject)))
   checkAll("SampleGeneric", SchemaTests[SampleGeneric]().algebra)
+
+  case class Sample(myint: Int, mystring: String, myboolean: Boolean)
+  implicit val sampleEq: Eq[Sample] = Eq.fromUniversalEquals[Sample]
+  implicit val sampleSchema: Schema[Sample] = sampleGenericSchema.iso(Iso(Generic[Sample].from)(Generic[Sample].to))
+  checkAll("Sample", SchemaTests[Sample]().algebra)
 }
