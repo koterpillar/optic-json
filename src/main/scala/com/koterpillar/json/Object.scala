@@ -31,7 +31,7 @@ sealed trait Object[A] extends Schema[A] {
 
 object Object {
   def jsonObject: Prism[Json, JsonObject] =
-    Prism((j: Json) => j.asObject)(Json.fromJsonObject)
+    Prism[Json, JsonObject](_.asObject)(Json.fromJsonObject)
 }
 
 case object NullObject extends Object[HNil] {
