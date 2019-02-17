@@ -1,6 +1,6 @@
 package com.koterpillar.json
 
-import cats.Eq
+import cats._
 import cats.implicits._
 import cats.kernel.laws._
 import cats.kernel.laws.discipline._
@@ -11,6 +11,8 @@ import org.scalatest.FunSuiteLike
 import org.typelevel.discipline.Laws
 import org.typelevel.discipline.scalatest.Discipline
 import utils._
+import shapeless._
+import org.scalacheck.ScalacheckShapeless._
 
 import scala.util.{Failure, Success, Try}
 
@@ -66,4 +68,14 @@ class InstancesSchemaTests extends Discipline with FunSuiteLike {
   checkAll("Int", SchemaTests[Int]().algebra)
   checkAll("String", SchemaTests[String]().algebra)
   checkAll("Boolean", SchemaTests[Boolean]().algebra)
+
+  type SampleGeneric = Int :: String :: Boolean :: HNil
+  implicit val sampleGenericEq: Eq[SampleGeneric] =
+    (a: SampleGeneric, b: SampleGeneric) =>
+      Eq.eqv(a.head, b.head) &&
+        Eq.eqv(a.tail.head, b.tail.head) &&
+        Eq.eqv(a.tail.tail.head, b.tail.tail.head)
+  implicit val sampleGenericSchema: Schema[SampleGeneric] =
+    product(field("myint"), product(field("mystring"), product(field("mybool"), emptyObject)))
+  checkAll("SampleGeneric", SchemaTests[SampleGeneric]().algebra)
 }

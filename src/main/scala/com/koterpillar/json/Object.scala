@@ -50,7 +50,11 @@ final case class ConsObject[H, T <: HList](head: Field[H], tail: Object[T]) exte
       tailValue <- tail.objectCodec.getOption(tailJson)
     } yield headValue :: tailValue
 
-    def reverseGet(value: H :: T): JsonObject = ???
+    def reverseGet(value: H :: T): JsonObject = {
+      val headValue :: tailValue = value
+      val result = tail.objectCodec.reverseGet(tailValue)
+      result.add(head.name, head.schema.codec.reverseGet(headValue))
+    }
 
     Prism(getOption)(reverseGet)
   }
