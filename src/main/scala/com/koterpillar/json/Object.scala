@@ -32,9 +32,16 @@ sealed trait Object[A] extends Schema[A] {
 object Object {
   def jsonObject: Prism[Json, JsonObject] =
     Prism[Json, JsonObject](_.asObject)(Json.fromJsonObject)
+
+  def apply[H](fieldName: String, schema: Schema[H]): GenericObject[H :: HNil] = ConsObject(Field(fieldName, schema), emptyObject)
 }
 
-case object NullObject extends Object[HNil] {
+sealed trait GenericObject[A <: HList] extends Object[A] {
+  // TODO this builds a reversed object
+  def apply[H](fieldName: String, schema: Schema[H]): GenericObject[H :: A] = ConsObject(Field(fieldName, schema), this)
+}
+
+case object emptyObject extends GenericObject[HNil] {
   override def fields: List[Field_] = Nil
 
   override def objectCodec: Prism[JsonObject, HNil] =
@@ -44,7 +51,7 @@ case object NullObject extends Object[HNil] {
 }
 
 final case class ConsObject[H, T <: HList](head: Field[H], tail: Object[T])
-    extends Object[H :: T] {
+    extends GenericObject[H :: T] {
   override def fields: List[Field_] = head :: tail.fields
 
   override def objectCodec: Prism[JsonObject, H :: T] = {

@@ -13,7 +13,7 @@ class SchemaTest extends FreeSpec with Matchers {
     }
 
     "should be accumulated for object types" in {
-      val latlonSchema = product(field[Int]("latitude"), product(field[Int]("longitude"), NullObject))
+      val latlonSchema = product(field[Int]("latitude"), product(field[Int]("longitude"), emptyObject))
       latlonSchema.schema should be(Json.obj(
         "type" -> "object".asJson,
         "fields" -> Json.obj(
