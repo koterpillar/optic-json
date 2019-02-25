@@ -12,10 +12,10 @@ val shapelessVersion = "2.3.3"
 val jsonSchemaVersion = "1.11.0"
 val kittensVersion = "1.2.0"
 
-lazy val lensJson = project
+lazy val opticJson = project
   .in(file("."))
   .settings(
-    name := "lens-json",
+    name := "optic-json",
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % circeVersion,
       "io.circe" %% "circe-generic" % circeVersion,
